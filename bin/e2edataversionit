@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 base_dir=${current_dir}/../..
 

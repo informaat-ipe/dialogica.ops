@@ -2,7 +2,7 @@
 set -e
 set -x
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 cd ${base_dir}
 
@@ -60,4 +60,4 @@ while read line; do
     fi
     set +x
 
-done < ${base_dir}/ops/etc/modules.txt
+done < ${base_dir}/node_modules/dialogica.ops/etc/modules.txt

@@ -3,7 +3,7 @@ set -e
 
 current_dir=$(cd $(dirname $0) && pwd)
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 echo "--"
 echo "--==  ${0}  ==--"

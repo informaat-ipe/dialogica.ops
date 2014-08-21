@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 
 ensure_node ${base_dir}/server server

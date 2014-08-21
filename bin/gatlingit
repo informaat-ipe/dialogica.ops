@@ -12,7 +12,7 @@
 # or
 # REMOTE_GATLING_HOME=/opt/gatling LOCAL_REPORTS=~/tmp/gatling/reports npm run --test=package.name --testUrl=http://localhost:9000 --from=informaat@test.informaat.net gatlingit
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 cd ${client_dir}
 

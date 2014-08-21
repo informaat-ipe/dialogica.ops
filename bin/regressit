@@ -6,7 +6,7 @@
 # or for diehards
 # npm run --dataVersion=0.2.48-99999 regress
 
-source ./commonit
+source node_modules/dialogica.ops/bin/commonit
 
 cd ${base_dir}
 
