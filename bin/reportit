@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-current_dir=$(cd $(dirname $0) && pwd)
-base_dir="${current_dir}/../.."
+# current_dir=$(cd $(dirname $0) && pwd)
+
+source ./commonit
+
 cd ${base_dir}
 
 if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then

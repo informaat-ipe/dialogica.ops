@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Setting the `base dir` in this central location:
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../../..
+
+# TODO: add `server_dir` and `client_dir` -- it is used a couple of times
+
 function parse_repo_line() {
     line=$1
     set +e

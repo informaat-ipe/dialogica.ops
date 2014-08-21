@@ -10,8 +10,7 @@ set -e
 ## That buildit has already been run on this source, with production
 ## parameters, so it is in a PRODUCTION STATE.
 
-current_dir=$(cd $(dirname $0) && pwd)
-base_dir=${current_dir}/../..
+source ./commonit
 
 cd ${base_dir}
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-current_dir=$(cd $(dirname $0) && pwd)
+source ./commonit
+
 base_dir=${current_dir}/../..
-cd ${base_dir}
 
 set -e
 

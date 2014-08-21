@@ -6,8 +6,8 @@
 # or for diehards
 # npm run --dataVersion=0.2.48-99999 regress
 
-current_dir=$(cd $(dirname $0) && pwd)
-base_dir=${current_dir}/../..
+source ./commonit
+
 cd ${base_dir}
 
 set -e
