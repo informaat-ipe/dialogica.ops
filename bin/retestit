@@ -4,15 +4,15 @@
 # example usuage:
 # npm run --testType=empty|filled --suite=basic|acceptance retest
 
-current_dir=$(cd $(dirname $0) && pwd)
-base_dir=${current_dir}/../../client
-cd ${base_dir}
+source ./commonit
+
+cd ${client_dir}
 
 set -e
 
 if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
   source ${OPS_HOME}/ops/bin/commonit
-  ensure_node ${base_dir}
+  ensure_node ${client_dir}
 else
   NODE_CMD=
 fi

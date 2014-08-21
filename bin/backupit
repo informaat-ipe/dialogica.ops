@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-current_dir=$(cd $(dirname $0) && pwd)
-source ${current_dir}/commonit
-base_dir=${current_dir}/../..
+source ./commonit
+
 
 ensure_node ${base_dir}/server server
 cd ${base_dir}/server

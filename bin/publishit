@@ -2,7 +2,8 @@
 set -e
 
 current_dir=$(cd $(dirname $0) && pwd)
-base_dir=${current_dir}/../..
+
+source ./commonit
 
 echo "--"
 echo "--==  ${0}  ==--"
