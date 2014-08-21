@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source ./commonit
+source ./node_modules/dialogica.ops/bin/commonit
 
 cd ${base_dir}
 
@@ -27,6 +27,7 @@ while read line; do
         echo "-- TESTIT WARNING ${package_dir} does not exist, skipping"
     fi
     fi
-done < ${base_dir}/ops/etc/modules.txt
+# done < ${base_dir}/ops/etc/modules.txt
+done < ${base_dir}/node_modules/dialogica.ops/etc/modules.txt
 
 

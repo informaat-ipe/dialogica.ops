@@ -1,11 +1,33 @@
 #!/usr/bin/env bash
 
+echo "[dialogica.ops/commonit] Sourced commonit"
+
+# SETTING `GLOBAL` VARIABLES
 # Setting the `base dir` in this central location:
 current_dir=$(cd $(dirname $0) && pwd)
-base_dir=${current_dir}/../../..
 
-# TODO: add `server_dir` and `client_dir` -- it is used a couple of times
+# Set some default paths, normalize them:
+base_dir=$(cd ${current_dir}/../../..; pwd)
+client_dir=${base_dir}/client
+server_dir=${base_dir}/server
 
+echo "[dialogica.ops/commonit] Base directory:   $base_dir"
+echo "[dialogica.ops/commonit] Client directory: $client_dir"
+echo "[dialogica.ops/commonit] Server directory: $server_dir"
+
+# TODO: where is `ensure_node` defined? -- in Jenkins
+
+# Set NODE_CMD
+# TODO: this piece of code is repeated 14 times across this project, move this also into `commonit`?
+# if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+#     source ${OPS_HOME}/ops/bin/commonit
+#     ensure_node ${server_dir}
+# else
+#     NODE_CMD=
+# fi
+
+
+# UTILITY FUNCTIONS
 function parse_repo_line() {
     line=$1
     set +e

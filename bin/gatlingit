@@ -14,7 +14,6 @@
 
 source ./commonit
 
-client_dir=${current_dir}/../../client
 cd ${client_dir}
 
 set -e

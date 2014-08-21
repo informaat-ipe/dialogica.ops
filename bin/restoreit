@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-
 source ./commonit
 
-server_dir=${base_dir}/server
 
 if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
   source ${OPS_HOME}/ops/bin/commonit

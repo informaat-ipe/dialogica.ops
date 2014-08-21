@@ -2,7 +2,6 @@
 
 source ./commonit
 
-server_dir=${base_dir}/server
 cd ${base_dir}
 
 set -e
