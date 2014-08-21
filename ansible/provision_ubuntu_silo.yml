@@ -1,0 +1,112 @@
+---
+# setup initial silo
+# prerequisites:
+# ssh server is running
+# the supplied user is able to login
+# the host is added to ansible_hosts in the group silos
+
+# creating a base silo with VirtualBox
+# new linux, ubuntu64 machine
+# add 2nd host-only network adapter
+# ubuntu-12.04.1-server-amd64.iso
+# F4 choose Minimal Virtual Installation
+# enter.... enter
+# pick a HOSTNAME (eg. silo01)
+# user informaat, password
+# ONLY install openSSH server
+
+# after first boot:
+# make sure informaat can sudo without password
+# adding informaat to sudo group
+# $ sudo usermod -aG sudo informaat
+
+# add the 2nd network interface by
+# adding the following lines to
+# $ sudo vi /etc/network/interfaces
+# # The secondary network interface
+# auto eth1
+# iface eth1 inet dhcp
+
+# when running from VirtualBox it might be handy to
+# not have the box remember its dhcp address
+# though this results in ssh hostkey errors.
+# sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules
+
+# restart the networking
+# $ sudo /etc/init.d/networking restart
+
+# install bonjour discovery tools
+# $ sudo apt-get -y install avahi-autoipd avahi-dnsconfd
+
+# if it doesn't exist, create a /home/informaat/.ssh folder and set permissions
+# $ mkdir ~/.ssh ; chmod 700 ~/.ssh
+
+# now you should be able to login from Terminal using
+# ssh informaat@HOSTNAME.local
+
+# add informaat to sudo group
+# sudo usermod -aG sudo informaat
+
+# give sudo group sudo rights without password
+# sudo visudo
+# %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+
+# you should add your ssh key to the host by doing on you local machine
+# $ cat ~/.ssh/id_dsa.pub | ssh informaat@HOSTNAME.local 'cat - >> ~/.ssh/authorized_keys'
+
+# now add this host to the ansible_hosts file in the [silos] section
+# [silos]
+# HOSTNAME.local
+
+# now you can run this playbook to do the rest of the base installation
+# $ ansible-playbook playbooks/provision_ubuntu_silo.yml
+
+- hosts: ubuntu_silos
+  user: informaat
+  sudo: yes
+  vars:
+    creator: Aiko Mastboom
+    home: /home/informaat
+
+  tasks:
+  - name: copy our small mongodb.conf
+    action: copy src=files/mongodb.conf.ubuntu dest=/etc/mongodb.conf owner=root group=root mode=644 backup=yes
+
+  - name: install mongodb key
+    action: command apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+
+  - name: check if the deb mongo line exist and add it when not
+    action: lineinfile dest=/etc/apt/sources.list regexp="^deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" line="deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen"
+
+  - name: update server packages
+    action: command apt-get install -y python-apt
+
+  - name: update server packages
+    action: apt update_cache=yes pkg=dselect,man-db,bash-completion,landscape-common,update-notifier-common,vim,command-not-found,htop,dstat,iotop,iftop,byobu,git-core,curl,wget,mercurial,python-dev,python-setuptools,build-essential,graphicsmagick,mongodb-10gen,duplicity,python-boto,ncftp,ssh,python-paramiko,rsync,psmisc,stunnel4
+
+  - name: install nodeenv
+    action: command easy_install -U nodeenv
+
+  - name: copy our certificate.pem
+    action: copy src=keys/host.pem dest=/etc/ssl/certs/informaat.net.pem owner=root group=root mode=644 backup=no
+
+  - name: copy our private.key
+    action: copy src=keys/host.key dest=/etc/ssl/private/informaat.net.key owner=root group=root mode=400 backup=no
+
+  - name: copy our stunnel.conf
+    action: copy src=files/stunnel.conf.ubuntu dest=/etc/stunnel/stunnel.conf owner=root group=root mode=644 backup=yes
+
+  - name: correct cert path for stunnel
+    action: line
+    action: lineinfile dest=/etc/stunnel/stunnel.conf regexp="^cert = " line="cert = /etc/ssl/certs/informaat.net.pem"
+
+  - name: correct key path for stunnel
+    action: line
+    action: lineinfile dest=/etc/stunnel/stunnel.conf regexp="^key = " line="key = /etc/ssl/private/informaat.net.key"
+
+  - name: bouncing proxy runs on port 80
+    action: lineinfile dest=/etc/stunnel/stunnel.conf regexp="^connect = " line="connect = 80"
+
+  - name: enable stunnel
+    action: lineinfile dest=/etc/default/stunnel4 regexp="^ENABLED=" line="ENABLED=1"
+

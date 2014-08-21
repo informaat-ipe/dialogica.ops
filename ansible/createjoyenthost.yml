@@ -1,0 +1,63 @@
+---
+# http://apidocs.joyent.com/sdcapidoc/cloudapi/#provision-a-new-smartmachine
+
+- hosts: 127.0.0.1
+  connection: local
+#  gather_facts: False
+  vars:
+#    group: test
+#    dataset: sdc:sdc:nodejs:1.4.0
+#    dataset: sdc:sdc:base64:1.8.1
+    package: Extra Small 512 MB
+#    creator: Aiko Mastboom
+#    email: Aiko.Mastboom@informaat.nl
+#    name: sil0
+  vars_prompt:
+    creator: "What is your name?"
+    email: "What is your email?"
+    name: "What is the name of this new joyent host?"
+    dataset: "What dataset ( sdc:sdc:nodejs:1.4.0 / sdc:sdc:base64:1.8.1 / sdc:sdc:standard64:1.0.7 / sdc:sdc:smartosplus64:3.1.0 ) to use?"
+    group: "What group ( test / other / silos ) does it belong to?"
+
+  tasks:
+  - name: Check if we have all needed params, name, group, dataset, package, creator, email
+    local_action: shell ! echo -n '${name} ${group} ${dataset} ${package} ${creator} ${email}' | egrep '\\$'
+
+  - name: Check if host already exists in ansible_hosts
+    local_action: shell ! grep -m1 ^${name} ${ansible_hosts}
+    when_set: ${name}
+
+  - name: Check if host already exists on joyent
+    local_action: command sdc-listmachines --type smartmachine --tag group=${group} --name ${name}
+    register: existing
+
+  - name: Dummy existing reply
+    local_action: command cat testing/dummy_existing_reply.json
+    register: existing
+    when_set: ${testing}
+
+
+  - name: Create new joyent instance
+    local_action: command sdc-createmachine --dataset ${dataset} --name ${name} --package "${package}" --tag group=${group} --metadata creator="${creator}" --metadata email=${email}
+    register: joyent
+    when_string: ${existing.stdout_json} == "[]"
+
+  - name: Dummy joyent reply
+    local_action: command cat testing/dummy_joyent_reply.json
+    register: joyent
+    when_set: ${testing}
+
+
+
+  - name: Add the new host
+    local_action: add_host hostname=${joyent.stdout_json.primaryIp} groupname=${group}
+    when_set: ${joyent}
+
+
+  - name: Append host to ansible_hosts
+    lineinfile: dest=${ansible_hosts} state=present insertafter='^\[joyent_silos\]$' regexp='^${name}' line="${name} ansible_ssh_host=${joyent.stdout_json.primaryIp} group=\"${group}\" dataset=\"${dataset}\" package=\"${package}\" creator=\"${creator}\" email=${email} id=${joyent.stdout_json.id} memory=${joyent.stdout_json.memory} disk=${joyent.stdout_json.disk}"
+    when_set: ${joyent}
+
+  - name: Wait for host to become available
+    local_action: wait_for host=${joyent.stdout_json.primaryIp} port=22 delay=10
+    when_set: ${joyent}

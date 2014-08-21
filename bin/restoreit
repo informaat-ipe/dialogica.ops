@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+current_dir=$(cd $(dirname $0) && pwd)
+source ${current_dir}/commonit
+base_dir=${current_dir}/../../server
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+cd ${base_dir}
+
+${NODE_CMD} node ./bin/aws/awsrestore.js
+

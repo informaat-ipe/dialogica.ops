@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+
+# example usuage:
+# npm run --testType=empty|filled --suite=basic|acceptance retest
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../../client
+cd ${base_dir}
+
+set -e
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+set -x
+
+export NODE_ENV=regress
+
+if [ -z ${1} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    testType=${npm_config_testType}
+else
+    # first argument is not empty, use it as testType
+    testType=${1}
+fi
+if [ "${testType}x" == "x" ]; then
+    echo "--testType not provided, see GruntFile protractor section for possible values"
+    exit 1
+fi
+
+if [ -z ${2} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    suite=${npm_config_suite}
+else
+    # first argument is not empty, use it as testType
+    suite=${2}
+fi
+if [ "${suite}x" == "x" ]; then
+    echo "--suite not provided, default value (acceptance) will be used"
+fi
+
+
+${NODE_CMD} grunt protractor:${testType} --suite=${suite}
+
+echo "-- DONE! --"
+

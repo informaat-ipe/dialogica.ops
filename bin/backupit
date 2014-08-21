@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+current_dir=$(cd $(dirname $0) && pwd)
+source ${current_dir}/commonit
+base_dir=${current_dir}/../..
+
+ensure_node ${base_dir}/server server
+cd ${base_dir}/server
+
+${NODE_CMD} node ./bin/aws/awsbackup.js
+

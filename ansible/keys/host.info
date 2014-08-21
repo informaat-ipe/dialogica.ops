@@ -1,0 +1,61 @@
+SHA1 Fingerprint=29:E2:84:97:17:E2:88:67:61:B7:59:99:8D:F9:B2:7C:CC:01:EA:6B
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            df:1b:85:48:f8:cd:b1:ab
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=NL, ST=Noord-Holland, L=Baarn, O=Informaat IPE BV, CN=*.informaat.net/emailAddress=OPS@informaat.nl
+        Validity
+            Not Before: Apr  3 14:06:20 2013 GMT
+            Not After : Apr  1 14:06:20 2023 GMT
+        Subject: C=NL, ST=Noord-Holland, L=Baarn, O=Informaat IPE BV, CN=*.informaat.net/emailAddress=OPS@informaat.nl
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:a4:86:78:2f:4b:cb:3d:24:f6:24:22:e4:e0:08:
+                    45:12:fd:d5:e3:dc:6a:a7:eb:05:4d:65:3d:10:4a:
+                    05:be:b2:50:b1:55:a3:93:0d:69:69:3b:bd:f7:5e:
+                    0a:7c:53:36:d3:13:ec:3f:86:0c:c5:00:cf:60:bd:
+                    37:54:48:9c:a7:6e:c4:3c:ca:88:00:45:ac:10:8c:
+                    0f:d0:b4:0e:7f:52:ed:c7:ae:f6:49:fb:ad:69:27:
+                    3e:41:e3:e4:94:b5:98:a4:16:e0:39:14:6b:51:d1:
+                    b1:d2:68:43:0d:da:39:40:13:9f:b5:56:10:09:da:
+                    76:73:f0:c0:ae:03:6b:b0:87:6e:50:32:52:2c:66:
+                    83:84:e9:97:85:98:a4:38:de:f9:13:65:1a:43:b8:
+                    07:c5:4a:d8:77:11:da:a2:97:2d:11:c2:91:a0:f2:
+                    8c:90:6d:99:ab:74:bb:b4:4a:81:00:dd:ae:05:4e:
+                    e0:f6:bd:9e:e2:03:85:6d:fa:7a:53:9c:8d:a7:87:
+                    6f:1c:ef:24:a0:4f:db:55:49:13:83:8b:b7:01:a2:
+                    21:94:c3:f6:ca:25:a8:79:63:fb:6d:f3:cd:ab:a3:
+                    e0:be:36:0d:79:eb:99:4d:a0:79:cc:e9:de:44:6d:
+                    b7:4c:0b:95:1e:eb:95:c1:09:1b:89:c4:9b:c7:22:
+                    81:51
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                4B:51:7A:DF:96:93:5F:64:F4:82:EC:BE:A5:10:E6:91:95:2E:F4:B3
+            X509v3 Authority Key Identifier: 
+                keyid:4B:51:7A:DF:96:93:5F:64:F4:82:EC:BE:A5:10:E6:91:95:2E:F4:B3
+                DirName:/C=NL/ST=Noord-Holland/L=Baarn/O=Informaat IPE BV/CN=*.informaat.net/emailAddress=OPS@informaat.nl
+                serial:DF:1B:85:48:F8:CD:B1:AB
+
+            X509v3 Basic Constraints: 
+                CA:TRUE
+    Signature Algorithm: sha1WithRSAEncryption
+        1a:2a:bd:20:b2:df:2d:05:a8:74:af:23:b7:ff:b4:9b:66:7a:
+        dc:0e:5f:12:af:cc:7c:e9:fa:ff:08:af:f7:de:58:5f:03:f8:
+        af:71:be:1f:9f:7f:2c:24:55:dc:ce:ce:30:96:26:ba:08:4a:
+        33:f6:a1:f2:81:4d:1c:b9:0d:2a:95:07:00:c4:9b:f2:22:01:
+        0f:ed:55:7f:9a:6d:44:41:c1:99:27:81:d2:b2:bc:18:88:d2:
+        72:71:29:25:a3:7b:25:98:ba:63:a6:9a:32:9c:c2:eb:59:92:
+        f5:0a:22:67:77:13:07:0b:ce:a9:f9:64:36:b4:be:70:b3:de:
+        26:30:5f:74:36:23:16:51:5c:f4:bb:37:e3:5e:d6:2a:30:13:
+        ad:d5:45:fb:07:af:56:70:4f:8d:30:25:6c:de:3f:a1:23:f4:
+        20:4c:24:90:c3:c2:5b:0b:20:c2:40:c6:6a:05:12:36:59:53:
+        44:4a:95:57:16:26:b5:9f:fe:cd:d9:94:f3:41:19:7b:7f:e6:
+        61:03:bb:97:cf:05:8f:61:a9:bc:1c:5a:4c:fd:fc:2f:48:f0:
+        9b:4a:48:23:21:c6:a1:05:00:e8:09:13:18:79:d7:22:7b:e1:
+        d5:d6:7a:63:16:c6:d2:7a:59:5c:23:ef:21:de:ae:eb:45:b7:
+        dc:f8:e7:c8

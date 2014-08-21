@@ -1,0 +1,53 @@
+---
+# setup deployment environment
+
+# $ ansible-playbook playbooks/scaffoldsilo.yml
+
+- hosts: release_silos
+  user: informaat
+  sudo: false
+#  connection: local
+#  gather_facts: False
+  vars_prompt:
+    DB_NAME: "What is the db_name used for this silo (eg. IPErelease)?"
+  vars:
+    repo: ipe
+    branch: release
+    creator: Aiko Mastboom
+    home: /home/informaat
+
+  tasks:
+  - name: is ssh-agent forwarding working; ansible -c ssh?
+    action: shell ssh-add -l
+
+  - name: ensure that the .ssh directory is readable only by ${user}
+    file: path=${home}/.ssh/ mode=0700 state=directory
+
+  - name: install the ssh keys, in order to do checkouts (private)
+    copy: src=keys/id_rsa.silo dest=${home}/.ssh/id_rsa mode=0600
+
+  - name: public key copies
+    copy: src=keys/id_rsa.silo.pub dest=${home}/.ssh/id_rsa.pub mode=0600
+
+  - name: create bin folder
+    command: creates=${home}/bin mkdir ${home}/bin
+
+  - name: copy backup script
+    copy: src=files/export_silo_db.sh dest=${home}/bin/export_silo_db.sh mode=755
+
+  - name: change DB_NAME
+    lineinfile: dest=${home}/bin/export_silo_db.sh regexp=^DB_NAME= line=DB_NAME="${DB_NAME}"
+
+  - name: create crontab entry for backup
+    cron: name="backup" minute="*/15" job=${home}/bin/export_silo_db.sh
+
+  - name: add git.informaat.com to known_hosts
+    shell: (ssh -oStrictHostKeyChecking=no hg@git.informaat.com || true)
+
+  - name: checkout the project to be built.
+    hg: repo=ssh://hg@git.informaat.com/projects/${repo} dest=${home}/${repo} revision=${branch} force=yes
+
+  - name: buildit
+    shell: ./ops/bin/buildit chdir=${home}/${repo}
+    async: 3600
+    poll: 15

@@ -1,0 +1,50 @@
+---
+# setup deployment environment
+
+# $ ansible-playbook playbooks/scaffoldsilo.yml
+
+- hosts: ubuntu_silos
+  user: informaat
+  sudo: false
+#  connection: local
+#  gather_facts: False
+  vars:
+    repo: ipe
+    branch: release
+    creator: Aiko Mastboom
+    node: 0.8.22
+    npm: 1.2.15
+    fleet_hub: 192.168.13.102:7000
+    fleet_secret: vier
+    home: /home/informaat
+  tasks:
+  - name: is ssh-agent forwarding working; ansible -c ssh?
+    action: shell ssh-add -l
+
+  - name: ensure that the .ssh directory is readable only by ${user}
+    file: path=${home}/.ssh/ mode=0700 state=directory
+
+  - name: install the ssh keys, in order to do checkouts (private)
+    copy: src=keys/id_rsa.silo dest=${home}/.ssh/id_rsa mode=0600
+
+  - name: public key copies
+    copy: src=keys/id_rsa.silo.pub dest=${home}/.ssh/id_rsa.pub mode=0600
+
+  - name: is correct version of node installed?
+    action: checknodeversion.sh ubuntu
+    register: thing
+
+  - name: install node.js
+    action: shell rm -rf ~/thing ; nodeenv -q -j 2 -n ${node} --npm=${npm} ~/things/${node} ; ln -s ~/things/${node} ~/thing
+    async: 1200
+    poll: 30
+    when_string: ${thing.node} != v${node}
+
+  - name: install fleet
+    action: shell (. ~/thing/bin/activate ; npm install -g http://github.com/aikomastboom/fleet/archive/0.1.8.tar.gz)
+
+  - name: install node-supervisor
+    action: shell (. ~/thing/bin/activate ; npm install -g supervisor)
+
+  - name: run fleet drone
+    action: shell (/usr/bin/byobu-screen -dmS fleet /bin/bash -c 'source ~/thing/bin/activate ; mkdir -p ~/fleet ; cd ~/fleet ; fleet-drone --hub ${fleet_hub} --secret ${fleet_secret}' ; sleep 1)

@@ -1,0 +1,16 @@
+{
+    "id": "12345678-abcd-1234-abcd-123456789012",
+    "name": "sil0",
+    "type": "smartmachine",
+    "state": "provisioning",
+    "dataset": "nodejs-1.1.4",
+    "memory": 128,
+    "disk": 5120,
+    "ips": [
+        "192.168.13.13",
+        "82.215.29.140"
+    ],
+    "metadata": {},
+    "created": "2013-01-01T00:02:31+00:00",
+    "updated": "2013-01-01T00:02:31+00:00"
+}

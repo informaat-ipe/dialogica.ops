@@ -1,0 +1,22 @@
+{
+  "name": "dialogica.ops",
+  "version": "0.0.0",
+  "description": "OPS module for inclusion in Dialogica",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dialogica", "ops"
+  ],
+  "author": "Garbrand van der Molen <garbrand.van.der.molen@informaat.nl>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/informaat-ipe/ops.git"
+  },
+  "bugs": {
+    "url": "https://github.com/informaat-ipe/ops/issues"
+  },
+  "homepage": "https://github.com/informaat-ipe/ops"
+}

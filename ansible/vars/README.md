@@ -1,0 +1,1 @@
+<http://ansible.cc/docs/playbooks.html#vars-section>

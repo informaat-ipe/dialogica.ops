@@ -1,0 +1,102 @@
+---
+# setup initial silo
+# prerequisites:
+
+# a running joyent "nodejs"
+# ssh access with keys
+
+# Actually there is not that much to as much of the needed
+# infrastructure is already in place
+
+# ssh server is running
+# the supplied user is able to login
+# the host is added to ansible_hosts in the group silos
+
+# for provisioning we will be using the admin user who has sudo rights
+# without needing a password
+
+# what we do need is the ip.
+
+# about sshing into the machine: you should have a key registered with
+# joyent, which will allow you onto the machine
+# login
+# add the key that is registered with joyent.  If you don't know about
+# this, check out the smartos.md document
+# ssh-add
+# ssh -A admin@ipaddr
+
+
+# now add this host to the ansible_hosts file in the [silos] section
+# [silos]
+# HOSTNAME.local
+
+# now you can run this playbook to do the rest of the base installation
+# $ ansible-playbook playbooks/provision_smartos_silo.yml
+
+- hosts: joyent_silos
+  user: admin
+  sudo: yes
+#  connection: local
+#  gather_facts: False
+  vars:
+    creator: Rohan Nicholls
+#  vars_prompt:
+#    user: "What user can login via ssh and has sudo rights?"
+  tasks:
+    # - name: Add the informaat user 
+    #   on ice at the moment
+
+    - name: make sure we have an updated pkgin list
+      action: command pkgin update
+
+    - name: install smtools which are really handy for querying the current state of the machine
+      pkgin: name=smtools state=present
+
+    - name: make sure that we have the version of nodejs we want
+      pkgin: name=nodejs-0.8.18 state=present
+
+    - name: ensure the build tools are installed 
+      pkgin: name=gmake state=present
+
+    - name: ensure that the .ssh directory is readable only by admin
+      file: path=/home/admin/.ssh/ mode=0700 state=directory
+
+    - name: install the ssh keys, in order to do checkouts (private)
+      copy: src=keys/id_rsa.silo dest=/home/admin/.ssh/id_rsa owner=admin group=staff mode=0600
+
+    - name: public key copies
+      copy: src=keys/id_rsa.silo.pub dest=/home/admin/.ssh/id_rsa.pub owner=admin group=staff mode=0600
+
+    - name: install mercurial so we can do a checkout
+      pkgin: name=mercurial state=present
+
+    - name: make sure we do not get hung up on first contact with a host in ssh
+      lineinfile: dest=/home/admin/.ssh/config state=present create=true regexp='^StrictHostKeyChecking' line='StrictHostKeyChecking no' 
+
+  # That's it, we are ready for scaffolding the stuff.
+
+  # mongodb is already setup on the silo
+  # - name: copy our small mongodb.conf
+  #   action: copy src=files/mongodb.conf dest=/opt/local/etc/mongodb.conf owner=root group=root mode=644 backup=yes
+
+  # - name: install mongodb key
+  #   action: command apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+
+#  - name: install add-apt-repository
+#    action: apt pkg=python-software-properties
+#
+#  - name: install mongodb repository
+#    action: apt_repository repo='deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen'
+
+  # - name: check if the deb mongo line exist and add it when not
+  #   action: lineinfile dest=/etc/apt/sources.list regexp="^deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" line="deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen"
+
+  # - name: update server packages
+  #   action: apt update_cache=no pkg=dselect,man-db,bash-completion,landscape-common,update-notifier-common,vim,command-not-found,htop,dstat,iotop,iftop,byobu,git-core,curl,wget,mercurial,python-dev,python-setuptools,build-essential,graphicsmagick,mongodb-10gen,duplicity,python-boto,ncftp,ssh,python-paramiko,rsync,psmisc
+
+  # - name: install nodeenv
+  #   action: command easy_install -U nodeenv
+
+
+
+

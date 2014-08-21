@@ -1,0 +1,17 @@
+
+[local]
+127.0.0.1
+
+[joyent_silos]
+
+[joyent_silos:vars]
+ansible_python_interpreter=/opt/local/bin/python
+
+[ubuntu_silos]
+test_ipe ansible_ssh_host=192.168.12.158
+
+[release_silos]
+release_ipe ansible_ssh_host=54.247.44.80
+foundation_ipe ansible_ssh_host=54.228.52.213
+klantx_ipe ansible_ssh_host=46.51.144.171
+

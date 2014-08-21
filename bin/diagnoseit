@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+current_dir=$(cd $(dirname $0) && pwd)
+source ${current_dir}/commonit
+base_dir=${current_dir}/../..
+
+cd ${base_dir}
+
+while read line; do
+    parse_repo_line "${line}"
+    if [ "${NAME}x" == "x" ]; then
+        continue
+    fi
+
+    package_dir=${base_dir}/${NAME}
+    if [ -d ${package_dir} ]; then
+        echo "--"
+        echo "--==  DIAGNOSEIT ${NAME}  ==--"
+        echo "--"
+        cd ${package_dir}
+
+        if [ -x ./diagnoseit ]; then
+          ./diagnoseit $1
+        fi
+        echo "-- DIAGNOSEIT done: ${NAME}"
+    else
+        echo "-- DIAGNOSEIT WARNING ${package_dir} does not exist, skipping"
+    fi
+
+done < ${base_dir}/ops/etc/modules.txt
+
+
+##########################################
+##  Put Your OPsy Sanity checks here    ##
+##########################################
+
+
+
+echo "SANITY CHECK: COMPLETE"

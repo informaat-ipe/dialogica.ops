@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+#set -x
+hg pull
+hg up "${1}"
+set +e
+hg merge -r release
+if [ $? == 0 ]; then
+  echo "merge with release and resolve first"
+  exit 1
+fi
+set -e
+if [ "${1}" != "ops" ]; then
+  echo "closing branch $1"
+  hg commit -m"closing branch ${1}" --close-branch
+fi
+hg up release
+echo "merging branch $1 into release"
+hg merge -r "${1}"
+hg commit -m"merged ${1} into release"
+echo "done, ready to push"

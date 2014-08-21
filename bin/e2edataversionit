@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../..
+cd ${base_dir}
+
+set -e
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+#set -x
+
+if [ -z ${1} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    testType=${npm_config_testType}
+else
+    # first argument is not empty, use it as dataVersion
+    testType=${1}
+fi
+
+testFolder=${base_dir}/client/test/e2e/sets/${testType}/e2e.conf.js
+if [ -e ${testFolder} ]; then
+    dataVersion=$(${NODE_CMD} node -e "var c=require('${testFolder}').config;console.log(c.dataSilo+' '+c.dataVersion);")
+    echo "${dataVersion}"
+else
+    echo "${testFolder} does not exist"
+    exit 1
+fi

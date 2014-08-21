@@ -1,0 +1,21 @@
+[{
+    "created" : "2013-01-02T14:52:35+00:00",
+    "dataset" : "sdc:sdc:base64:1.8.1",
+    "disk" : 15360,
+    "id" : "413a40bf-3a1e-49b6-a2d4-26be6e51ae0b",
+    "ips" :
+            [
+                "37.153.97.43",
+                "10.224.4.47"
+            ],
+    "memory" : 512,
+    "metadata" :
+    {
+        "creator" : "Aiko Mastboom"
+    },
+    "name" : "foundation",
+    "primaryIp" : "37.153.97.43",
+    "state" : "provisioning",
+    "type" : "smartmachine",
+    "updated" : "2013-01-02T14:52:35+00:00"
+}]

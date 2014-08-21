@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+current_dir=$(cd $(dirname $0) && pwd)
+server_dir=${current_dir}/../../server
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${server_dir}
+else
+  NODE_CMD=
+fi
+set -x
+
+server=""
+if [ "${1}" == "server" ]; then
+  server="server"
+  if [ "${2}" != "" ]; then
+    BRANCH=${2}
+  else
+    echo usage ./stopit server branchname
+  fi
+fi
+
+if [ "${server}" == "server" ]; then
+    # server stop
+    ${NODE_CMD} pm2 delete ${BRANCH}
+    echo "-- DONE! --"
+fi

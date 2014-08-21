@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+# set LOCAL_REPORTS environment to specify the location of the reports
+# set REMOTE_GATLING_HOME environment to specify remote gatling location
+
+# simple example usage:
+# npm --test=login.log run gatling
+
+
+# example usuage:
+# ./ops/bin/gatlingit package.name http://localhost:9000 ubuntu@test.informaat.net
+# or
+# REMOTE_GATLING_HOME=/opt/gatling LOCAL_REPORTS=~/tmp/gatling/reports npm run --test=package.name --testUrl=http://localhost:9000 --from=informaat@test.informaat.net gatlingit
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../../client
+cd ${base_dir}
+
+set -e
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+#set -x
+
+# first argument is not empty, use it as test
+test=${1}
+if [ -z ${test} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    test=${npm_config_test}
+fi
+if [ -z ${test} ]; then
+    echo "--test needs to be given"
+    exit 1
+fi
+
+# second argument is not empty, use it as testUrl
+testUrl=${2}
+if [ -z ${testUrl} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    testUrl=${npm_config_testUrl}
+fi
+hostname=$(hostname)
+
+if [ -z ${testUrl} ]; then
+    # default for developers
+    testUrl=http://${hostname}:9000
+fi
+
+# third argument is not empty, use it as from
+from=${3}
+if [ -z ${from} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    from=${npm_config_from}
+fi
+if [ -z ${from} ]; then
+    from=informaat@test.informaat.net
+fi
+
+if [ -z ${TMP} ]; then
+    TMP=$TMPDIR
+    if [ -z ${TMP} ]; then
+        TMP=/tmp
+    fi
+fi
+
+# when LOCAL_REPORTS is set, we assume automated gatling runs
+if [ -z ${LOCAL_REPORTS} ];then
+    LOCAL_REPORTS=${TMP}/results
+    # assuming a developer running 1 test
+    rm -rf ${LOCAL_REPORTS}
+fi
+if [ -z ${REMOTE_GATLING_HOME} ]; then
+    REMOTE_GATLING_HOME=/opt/gatling
+fi
+
+SF=/tmp/gatling/${hostname}
+RF=/tmp/gatling/${hostname}/results
+testResult=0
+
+on_die()
+{
+    set +e
+    # cleanup remotely
+    ssh ${from} -t rm -rf ${RF}
+    ssh ${from} -t rm -rf ${SF}
+    exit ${testResult}
+}
+
+# setting signal handler, to kill the child, if SIGTERM or SIGINT is received
+trap on_die INT TERM EXIT
+
+ssh ${from} -t mkdir -p ${SF}
+rsync -a ./test/Gatling/user-files ${from}:${SF}
+set +e
+echo "ssh ${from} -t TEST_URL=${testUrl} ${REMOTE_GATLING_HOME}/bin/gatling.sh -sf ${SF} -rf ${RF} -s ${test}"
+ssh ${from} -t TEST_URL=${testUrl} ${REMOTE_GATLING_HOME}/bin/gatling.sh -sf ${SF} -rf ${RF} -s ${test}
+testResult=$?
+set -e
+mkdir -p ${LOCAL_REPORTS}
+rsync -a ${from}:${RF}/ ${LOCAL_REPORTS}
+testName=$(echo ${test} | cut -d '.' -f 2)
+
+echo "report copied into ${LOCAL_REPORTS}"
+echo "to see: open ${LOCAL_REPORTS}/${testName}-*/index.html"
+
+echo "-- DONE! --"
+

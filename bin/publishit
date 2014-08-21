@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -e
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../..
+
+echo "--"
+echo "--==  ${0}  ==--"
+echo "--"
+
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${current_dir}
+else
+  NODE_CMD=
+fi
+
+if [ -d ${base_dir}/build ]
+then
+  if [ -z "${1}" -o "${1}" == "server" ]; then
+    ${NODE_CMD} npm publish ${base_dir}/build/dialogica-server
+  fi
+  if [ -z "${1}" -o "${1}" == "client" ]; then
+    ${NODE_CMD} npm publish ${base_dir}/build/dialogica-client
+  fi
+else
+  echo "ERROR: nothing packaged to publish"
+fi
+echo "-- ${0} done"

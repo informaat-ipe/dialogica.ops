@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+current_dir=$(cd $(dirname $0) && pwd)
+source ${current_dir}/commonit
+base_dir=${current_dir}/../..
+
+cd ${base_dir}
+
+set -e
+
+if [ "${1}x" != "forcex" ]; then
+    # use force to bypass check
+    hg up -c
+fi
+
+rm -rf ./client_instrumented
+
+while read line; do
+    parse_repo_line "${line}"
+    if [ "${NAME}x" == "x" ]; then
+        continue
+    fi
+
+    package_dir=${base_dir}/${NAME}
+    if [ -d ${package_dir} ]; then
+        echo "--"
+        echo "--==  CLEANIT ${NAME}  ==--"
+        echo "--"
+        cd ${package_dir}
+        if [ "${NAME}" == "client" ]; then
+            rm -rf assets
+            rm -rf build
+            rm -rf bower_components
+        fi
+        rm -rf node_modules
+        echo "-- CLEANIT done: ${NAME}"
+    else
+        echo "-- CLEANIT WARNING ${package_dir} does not exist, skipping"
+    fi
+
+done < ${base_dir}/ops/etc/modules.txt
+
+cd ${base_dir}
+echo "-- CLEANIT use 'hg up -C' to restore mercurial content"

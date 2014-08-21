@@ -1,0 +1,65 @@
+---
+# setup initial silo
+# prerequisites:
+# ssh server is running
+# the supplied user is able to login
+# the host is added to ansible_hosts in the group silos
+
+# create new host on AWS then:
+
+# useradd --shell /bin/bash -G sudo -m informaat
+
+# if it doesn't exist, create a /home/informaat/.ssh folder and set permissions
+# $ mkdir ~/.ssh ; chmod 700 ~/.ssh
+
+# give sudo group sudo rights without password
+# sudo visudo
+# %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+
+# you should add your ssh key to the host by doing on you local machine
+# $ cat ~/.ssh/id_dsa.pub | ssh informaat@HOSTNAME.local 'cat - >> ~/.ssh/authorized_keys'
+
+# now add this host to the ansible_hosts file in the [silos] section
+# [release_silos]
+# HOSTNAME.local
+
+# voeg to aan .bashrc:
+# export SILO_CONFIG='{"silo":"foundation","bounce":{"host":"localhost","port":9090,"secret":"vier"},"persistence":{"dbname":"IPEfoundation"},"authentication":{"encryptcookie":"true"},"websocket":{"useWebsocket":true}}'
+# export DOMAIN=informaat.net
+
+# now you can run this playbook to do the rest of the base installation
+# $ ansible-playbook playbooks/provision_release_silo.yml
+
+- hosts: release_silos
+  user: informaat
+  sudo: yes
+  vars:
+    creator: Aiko Mastboom
+    home: /home/informaat
+  tasks:
+  - name: copy our small mongodb.conf
+    action: copy src=files/mongodb.conf.ubuntu dest=/etc/mongodb.conf owner=root group=root mode=644 backup=yes
+
+  - name: install mongodb key
+    action: command apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+
+  - name: check if the deb mongo line exist and add it when not
+    action: lineinfile dest=/etc/apt/sources.list regexp="^deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" line="deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen"
+
+  - name: update timezone
+    shell: (echo "Europe/Amsterdam" | sudo tee /etc/timezone ; sudo dpkg-reconfigure --frontend noninteractive tzdata)
+
+  - name: update server packages
+    action: command apt-get install -y python-apt
+
+  - name: update server packages
+    action: apt update_cache=yes pkg=dselect,man-db,bash-completion,landscape-common,update-notifier-common,vim,command-not-found,htop,dstat,iotop,iftop,byobu,git-core,curl,wget,mercurial,python-dev,python-setuptools,build-essential,graphicsmagick,mongodb-10gen,duplicity,python-boto,ncftp,ssh,python-paramiko,rsync,psmisc,stunnel4
+
+  - name: install nodeenv
+    action: command easy_install -U nodeenv
+
+  - name: copy our stunnel.conf
+    action: copy src=files/stunnel.conf.ubuntu dest=/etc/stunnel/stunnel.conf owner=root group=root mode=644 backup=yes
+
+  - name: enable stunnel
+    action: lineinfile dest=/etc/default/stunnel4 regexp="^ENABLED=" line="ENABLED=1"

@@ -1,0 +1,7 @@
+# the backend
+server
+
+# the client
+client
+
+# done

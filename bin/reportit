@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir="${current_dir}/../.."
+cd ${base_dir}
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+if [ "${1}" == "server" ]; then
+    # node_modules/.bin/plato -x node_modules -x var -x test -r -d ./documentation/plato/server server/
+    ${NODE_CMD} ./node_modules/.bin/plato -x "node_modules|var|test" -r -d ./documentation/plato/server server/
+fi
+
+if [ "${1}" == "client" ]; then
+    ${NODE_CMD} ./node_modules/.bin/plato -x "components|build|external|locales|node_modules|style|test|libs" -r -d ./documentation/plato/client client/
+fi

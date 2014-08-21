@@ -1,0 +1,62 @@
+---
+# setup deployment environment
+
+# $ ansible-playbook playbooks/scaffoldsilo.yml
+
+- hosts: joyent_silos
+  user: admin
+  sudo: false
+#  connection: local
+#  gather_facts: False
+  vars:
+    creator: Aiko Mastboom
+    # node: 0.8.11
+    # npm: 1.1.62
+    fleet_hub: operations.local:7000
+    fleet_secret: vier
+    home: /home/admin
+    repo: ipe
+#  vars_prompt:
+#    user: "What user can login via ssh and has sudo rights?"
+  tasks:
+
+  # Because we are dealing with a global version, we need to rethink
+  # how this will be handled.
+  # - name: is correct version of node
+  # installed?  action: checknodeversion.sh register: thing
+
+  # - name: install node.js
+  #   action: shell rm -rf ~/thing ; nodeenv -q -j 2 -n ${node} --npm=${npm} ~/thing
+  #   async: 1200
+  #   poll: 30
+  #   when_string: ${thing.node} != v${node} or ${thing.npm} != ${npm}
+
+  # - name: install fleet
+  #   action: shell sudo npm install -g http://github.com/aikomastboom/fleet/archive/0.1.8.tar.gz
+
+  - name: install mocha
+    action: shell sudo npm install -g mocha
+
+  - name: install node-supervisor
+    action: shell sudo npm install -g supervisor
+
+  # with the ssh keys installed above we should be able to check out
+  # from the hg repository.  When we have the git release repository
+  # installed and the keys in place, we should be able to checkout of
+  # there.  I am sure that maybe we should be doing an export and
+  # sending it over.
+  - name: checkout the project to be built.
+    hg: repo=ssh://hg@git.informaat.com/projects/${repo} dest=${home}/${repo} revision=sb_ops_prepare_for_one_hg force=yes
+
+  # the build process needs to be redone, it fails at the moment
+  # because it is using bash, and the commands are different between
+  # smartos and ubuntu 
+  - name: buildit
+    shell: ./ops/bin/buildit chdir=${home}/${repo}
+
+  # -name: runit
+
+  # - name: run fleet drone
+  #   action: shell (/usr/bin/byobu-screen -dmS fleet /bin/bash -c 'source ~/thing/bin/activate ; cd ~/fleet ; fleet-drone --hub ${fleet_hub} --secret ${fleet_secret}' ; sleep 1)
+
+

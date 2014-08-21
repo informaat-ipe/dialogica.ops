@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -e
+
+## as far as I can see, I have to copy everything into the build
+## directory.  The assumption is that this script is in
+## ops/bin/packageit
+
+## Assumption too:
+
+## That buildit has already been run on this source, with production
+## parameters, so it is in a PRODUCTION STATE.
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../..
+
+cd ${base_dir}
+
+if [ -d ${base_dir}/build ]
+then
+  rm -rf ${base_dir}/package.log
+  rm -rf ${base_dir}/build
+fi
+
+FORCE=""
+
+# check if build didn't create/modify any files under version control
+set +e
+hg st |grep ^M
+local_changes=$?
+set -e
+if [ "${local_changes}" == "0" ]; then 
+  echo "WARNING: local changes found.."
+  if [ "${1}x" != "forcex" ]; then
+    echo "Unable to package unless force is applied"
+    echo "use ${0} force"
+    exit 1
+  else
+    echo "FORCE applied."
+    FORCE="F";
+  fi
+fi
+
+echo "--"
+echo "--==  ${0} ==--"
+echo "--"
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${current_dir}
+else
+  NODE_CMD=
+fi
+
+set -x
+
+mkdir -p build
+
+CLIENT=$(${NODE_CMD} node -e 'console.log(require("./client/package.json").name);')
+SERVER=$(${NODE_CMD} node -e 'console.log(require("./server/package.json").name);')
+
+
+echo "copying files to package into build folder.. see package.log"
+
+## We are going to try and keep this simple and clear.  Taking a whitelist approach.
+# What do we actually need to copy?
+function copy_it {
+	local from_path="${1}"
+	local to_path="${2}"
+	rsync -aq --log-file=${base_dir}/package.log --delete-after --delete-excluded  ${from_path} ${to_path}
+}
+
+## client side assets folder
+# mkdir -p build/client
+copy_it client/assets build/${CLIENT}
+copy_it client/bower_components/open-sans-fontface build/${CLIENT}/bower_components/
+copy_it client/bower_components/font-awesome build/${CLIENT}/bower_components/
+copy_it "client/*.jade" build/${CLIENT}
+rm -rf build/${CLIENT}/src
+rm -rf build/${CLIENT}/style
+
+## everything on the server side
+# mkdir -p build/server
+copy_it server/bin build/${SERVER}/
+copy_it server/node_modules build/${SERVER}/
+copy_it config build/${SERVER}/
+copy_it server/lib build/${SERVER}/
+copy_it server/server.js build/${SERVER}/
+copy_it server/README.md build/${SERVER}/
+## anything in the top level directory?
+copy_it README.md build/${CLIENT}/
+copy_it history.md build/${CLIENT}/
+copy_it history.md build/${SERVER}/
+
+echo "/config/local.*" >  build/${SERVER}/.npmignore
+echo "/config/local-*" >> build/${SERVER}/.npmignore
+
+# update package.json for this package.
+
+
+# update package.json
+# private = false
+# version = version-BUILD
+# commit = COMMIT
+# bundledDependencies == dependencies
+VERSION=$(${NODE_CMD} node -e 'console.log(require("./package.json").version);')
+COMMIT=$(hg --debug id -i)
+if [ "${BUILD}" == "" ]; then
+  BUILD="$(hg --debug id -i | cut -d '+' -f 1)$FORCE"
+fi
+
+${NODE_CMD} node -e 'var p=require("./server/package.json"); p.version="'${VERSION}'-'${BUILD}'"; p.repository.commit="'${COMMIT}'"; p.private=false; p.scripts["install"]="unset npm_config_depth ; npm rebuild"; var pbd=[], pd=p.dependencies; for(d in pd) {if (pd.hasOwnProperty(d)) {pbd.push(d);}}; p.bundledDependencies=pbd; console.log(JSON.stringify(p,null,2));' > ./build/${SERVER}/package.json
+
+${NODE_CMD} node -e 'var p=require("./client/package.json"); p.version="'${VERSION}'-'${BUILD}'"; p.repository.commit="'${COMMIT}'"; p.private=false; var pbd=[], pd=p.dependencies; for(d in pd) {if (pd.hasOwnProperty(d)) {pbd.push(d);}}; p.bundledDependencies=pbd; console.log(JSON.stringify(p,null,2));' > ./build/${CLIENT}/package.json
+
+echo "${VERSION}-${BUILD}" > ./build/version
+
+set +x
+echo "-- ${0} done"

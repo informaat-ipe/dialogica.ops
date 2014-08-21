@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../..
+server_dir=${base_dir}/server
+cd ${base_dir}
+
+set -e
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${server_dir}
+else
+  NODE_CMD=
+fi
+
+set -x
+
+server=""
+if [ "${1}" == "server" ]; then
+    server="server"
+    if [ "${2}" != "" ]; then
+        BRANCH=${2}
+    fi
+fi
+
+if [ "${server}" == "server" ]; then
+
+    set +e
+    ${NODE_CMD} command -v pm2
+    check_pm2=$?
+    set -e
+    if [ "${check_pm2}" != "0" ] ; then
+        ${NODE_CMD} npm install -g pm2
+    fi
+    if [ "${NODE_CONFIG_DIR}" == "config" ]; then
+        unset NODE_CONFIG_DIR
+    fi
+
+    # make sure bower can deploy a channel with deps on eg https://library.informaat-cxp.com/cxp-engine.git
+    export GIT_SSL_NO_VERIFY=true
+
+    export
+
+    echo "[{
+  \"name\" :         \"${BRANCH}\",
+  \"script\" :       \"./server.js\",
+  \"exec_mode\" :    \"fork_mode\"
+  }]" > processes.json
+
+    # server startup
+    ${NODE_CMD} pm2 start processes.json
+else
+    # development startup
+    cd ${server_dir}
+    ${NODE_CMD} node ./server.js &
+    RUN_PID="$!"
+fi
+
+on_die()
+{
+    echo "INFO [$(date)]: Signal received. Terminating child"
+    if [ ${RUN_PID} ]; then
+        kill ${RUN_PID}
+    fi
+    exit
+}
+
+# setting signal handler, to kill the child, if SIGTERM or SIGINT is received
+trap on_die INT TERM EXIT
+
+# waiting for signal or child to terminate"
+wait
+
+echo "-- DONE! --"

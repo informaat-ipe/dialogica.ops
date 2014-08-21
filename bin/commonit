@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function parse_repo_line() {
+    line=$1
+    set +e
+    echo ${line} | grep ^#
+    comment=$?
+    echo ${line} | grep ^$
+    empty=$?
+    set -e
+    NAME=''
+    # skip lines starting with #
+    if [ "${comment}" == "0" ]; then
+        continue
+    else
+        # skip empty lines
+        if [ "${empty}" == "0" ]; then
+            continue
+        else
+            NAME=$(echo ${line} | cut -d ' ' -f1)
+        fi
+    fi
+}

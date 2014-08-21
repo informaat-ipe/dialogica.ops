@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+# example usage:
+# npm run --testType=empty regress
+
+# or for diehards
+# npm run --dataVersion=0.2.48-99999 regress
+
+current_dir=$(cd $(dirname $0) && pwd)
+base_dir=${current_dir}/../..
+cd ${base_dir}
+
+set -e
+
+if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
+  source ${OPS_HOME}/ops/bin/commonit
+  ensure_node ${base_dir}
+else
+  NODE_CMD=
+fi
+
+set -x
+
+export NODE_ENV=regress
+
+# drop database
+${base_dir}/server/bin/dropdatabaseit
+
+# initialize database
+
+if [ -z ${1} ]; then
+    # first argument is empty, use whatever exists in npm context.
+    dataVersion=${npm_config_dataVersion}
+    dataSilo=${npm_config_dataSilo}
+else
+    # first argument is not empty, use it as dataVersion
+    dataVersion=${1}
+    dataSilo=${2}
+    if [ -z ${dataSilo} ]; then
+        dataSilo='foundation'
+    fi
+fi
+if [ "${npm_config_testType}x" != "x" ]; then
+    data=$(${current_dir}/e2edataversionit)
+    dataSilo=$(echo $data | cut -f1 -d' ')
+    dataVersion=$(echo $data | cut -f2 -d' ')
+fi
+
+
+# always run import initial
+${NODE_CMD} npm run import-initial
+
+if [ "${dataVersion}x" != "x" ]; then
+    ${NODE_CMD} npm --dataSilo=${dataSilo} --dataVersion=${dataVersion} run dataupdate
+fi
+
+
+# start server
+# development startup
+${NODE_CMD} node ./server.js &
+RUN_PID="$!"
+
+on_die()
+{
+    echo "INFO [$(date)]: Signal received. Terminating child"
+    if [ ${RUN_PID} ]; then
+        kill ${RUN_PID}
+    fi
+    exit
+}
+
+# setting signal handler, to kill the child, if SIGTERM or SIGINT is received
+trap on_die INT TERM EXIT
+
+# waiting for signal or child to terminate"
+wait
+# do not start selenium hub as it is started automagically by protractor
+#${NODE_CMD} ./client/node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager start
+
+
+echo "-- DONE! --"
