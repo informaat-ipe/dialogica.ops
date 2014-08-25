@@ -9,17 +9,11 @@ base_dir=$(cd ${current_dir}/../../..; pwd)
 client_dir=${base_dir}/client
 server_dir=${base_dir}/server
 
-# Set some colors for fancy logging
-clear='\033[0m'     # no color
-red='\033[0;31m'    # error
-green='\033[0;32m'  # info
-blue='\033[0;34m'   # log
+echo -e "[dialogica.ops/commonit] Sourced commonit"
 
-echo -e "${green}[dialogica.ops/commonit]${clear} Sourced commonit"
-
-echo -e "${blue}[dialogica.ops/commonit]${clear} Base directory:   $base_dir"
-echo -e "${blue}[dialogica.ops/commonit]${clear} Client directory: $client_dir"
-echo -e "${blue}[dialogica.ops/commonit]${clear} Server directory: $server_dir"
+echo -e "[dialogica.ops/commonit] Base directory:   $base_dir"
+echo -e "[dialogica.ops/commonit] Client directory: $client_dir"
+echo -e "[dialogica.ops/commonit] Server directory: $server_dir"
 
 echo ""
 
