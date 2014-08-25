@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "[dialogica.ops/commonit] Sourced commonit"
-
 # SETTING `GLOBAL` VARIABLES
 # Setting the `base dir` in this central location:
 current_dir=$(cd $(dirname $0) && pwd)
@@ -11,9 +9,19 @@ base_dir=$(cd ${current_dir}/../../..; pwd)
 client_dir=${base_dir}/client
 server_dir=${base_dir}/server
 
-echo "[dialogica.ops/commonit] Base directory:   $base_dir"
-echo "[dialogica.ops/commonit] Client directory: $client_dir"
-echo "[dialogica.ops/commonit] Server directory: $server_dir"
+# Set some colors for fancy logging
+clear='\033[0m'     # no color
+red='\033[0;31m'    # error
+green='\033[0;32m'  # info
+blue='\033[0;34m'   # log
+
+echo -e "${green}[dialogica.ops/commonit]${clear} Sourced commonit"
+
+echo -e "${blue}[dialogica.ops/commonit]${clear} Base directory:   $base_dir"
+echo -e "${blue}[dialogica.ops/commonit]${clear} Client directory: $client_dir"
+echo -e "${blue}[dialogica.ops/commonit]${clear} Server directory: $server_dir"
+
+echo ""
 
 # TODO: where is `ensure_node` defined? -- in Jenkins
 
@@ -21,7 +29,7 @@ echo "[dialogica.ops/commonit] Server directory: $server_dir"
 # TODO: this piece of code is repeated 14 times across this project, move this also into `commonit`?
 # if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
 #     source ${OPS_HOME}/ops/bin/commonit
-#     ensure_node ${server_dir}
+#     ensure_node ${server_dir} # <-- this folder is the only part that changes
 # else
 #     NODE_CMD=
 # fi
