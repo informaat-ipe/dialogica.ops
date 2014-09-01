@@ -2,7 +2,7 @@
 
 OPS package for Dialogica, containing all scripts needed from an Operations standpoint. These scripts are referenced from the root `package.json:scripts` sections.
 
-## Packages
+## Scripts
 ```
 backupit
 buildit

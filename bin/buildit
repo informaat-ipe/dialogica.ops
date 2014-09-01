@@ -22,7 +22,7 @@ export npm_config_depth=Infinity
 while read line; do
     parse_repo_line "${line}"
     if [ "${NAME}x" == "x" ]; then
-        continue
+        continue÷
     fi
 
     package_dir=${base_dir}/${NAME}
