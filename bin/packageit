@@ -50,8 +50,6 @@ else
   NODE_CMD=
 fi
 
-set -x
-
 mkdir -p build
 
 CLIENT=$(${NODE_CMD} node -e 'console.log(require("./client/package.json").name);')
@@ -113,5 +111,4 @@ ${NODE_CMD} node -e 'var p=require("./client/package.json"); p.version="'${VERSI
 
 echo "${VERSION}-${BUILD}" > ./build/version
 
-set +x
 echo "-- ${0} done"

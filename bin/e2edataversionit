@@ -13,8 +13,6 @@ else
   NODE_CMD=
 fi
 
-#set -x
-
 if [ -z ${1} ]; then
     # first argument is empty, use whatever exists in npm context.
     testType=${npm_config_testType}

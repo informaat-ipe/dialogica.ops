@@ -17,8 +17,6 @@ else
   NODE_CMD=
 fi
 
-set -x
-
 export NODE_ENV=regress
 
 if [ -z ${1} ]; then

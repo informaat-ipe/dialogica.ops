@@ -19,8 +19,6 @@ else
   NODE_CMD=
 fi
 
-set -x
-
 export NODE_ENV=regress
 
 # drop database

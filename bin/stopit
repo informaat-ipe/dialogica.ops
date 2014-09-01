@@ -9,7 +9,6 @@ if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
 else
   NODE_CMD=
 fi
-set -x
 
 server=""
 if [ "${1}" == "server" ]; then

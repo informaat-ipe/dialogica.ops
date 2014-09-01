@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-#set -x
 hg pull
 hg up "${1}"
 set +e

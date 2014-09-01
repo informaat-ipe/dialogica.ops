@@ -13,8 +13,6 @@ else
   NODE_CMD=
 fi
 
-set -x
-
 server=""
 if [ "${1}" == "server" ]; then
     server="server"

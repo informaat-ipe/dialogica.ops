@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-set -x
 
 source node_modules/dialogica.ops/bin/commonit
 
@@ -9,8 +8,6 @@ cd ${base_dir}
 if [ "${1}" == "clean" ]; then
     ${current_dir}/cleanit force
 fi
-
-set +x
 
 # Calling npm run build, means that npm (for whatever reason) has set
 # the npm_config_depth to null (explicitly).  When npm then calls
@@ -33,7 +30,6 @@ while read line; do
         echo "--"
         echo "--==  BUILDIT ${NAME}  ==--"
         echo "--"
-        set -x
         cd ${package_dir}
 
         if [ -x ./buildit ]; then
@@ -58,6 +54,5 @@ while read line; do
     else
         echo "-- BUILDIT WARNING ${package_dir} does not exist, skipping"
     fi
-    set +x
 
 done < ${base_dir}/node_modules/dialogica.ops/etc/modules.txt
