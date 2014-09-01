@@ -5,13 +5,18 @@ source ./node_modules/dialogica.ops/bin/commonit
 
 cd ${base_dir}
 
+module=${1}
+if [ -z "${module}" ]; then
+  module=${npm_config_module}
+fi
+
 while read line; do
     parse_repo_line "${line}"
     if [ "${NAME}x" == "x" ]; then
         continue
     fi
 
-    if [ -z "${1}" -o "${NAME}" == "${1}" -o "${1}" == "test" ]; then
+    if [ -z "${module}" -o "${NAME}" == "${module}" -o "${module}" == "test" ]; then
     package_dir=${base_dir}/${NAME}
     if [ -d ${package_dir} ]; then
         echo "--"
