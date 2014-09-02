@@ -1,6 +1,6 @@
 {
   "name": "dialogica.ops",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "OPS module for inclusion in Dialogica",
   "main": "index.js",
   "scripts": {

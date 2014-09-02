@@ -9,6 +9,10 @@ echo "--"
 echo "--==  ${0}  ==--"
 echo "--"
 
+module=${1}
+if [ -z "${module}" ]; then
+  module=${npm_config_module}
+fi
 
 if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then
   source ${OPS_HOME}/ops/bin/commonit
@@ -19,10 +23,10 @@ fi
 
 if [ -d ${base_dir}/build ]
 then
-  if [ -z "${1}" -o "${1}" == "server" ]; then
+  if [ -z "${module}" -o "${module}" == "server" ]; then
     ${NODE_CMD} npm publish ${base_dir}/build/dialogica-server
   fi
-  if [ -z "${1}" -o "${1}" == "client" ]; then
+  if [ -z "${module}" -o "${module}" == "client" ]; then
     ${NODE_CMD} npm publish ${base_dir}/build/dialogica-client
   fi
 else
