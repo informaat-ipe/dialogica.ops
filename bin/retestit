@@ -4,7 +4,7 @@
 # example usuage:
 # npm run --testType=empty|filled --suite=basic|acceptance retest
 
-source node_modules/dialogica.ops/bin/commonit
+source ./node_modules/dialogica.ops/bin/commonit
 
 cd ${client_dir}
 

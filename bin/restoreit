@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source node_modules/dialogica.ops/bin/commonit
+source ./node_modules/dialogica.ops/bin/commonit
 
 
 if [ -e "${OPS_HOME}/ops/bin/commonit" ]; then

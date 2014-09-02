@@ -10,7 +10,7 @@ set -e
 ## That buildit has already been run on this source, with production
 ## parameters, so it is in a PRODUCTION STATE.
 
-source node_modules/dialogica.ops/bin/commonit
+source ./node_modules/dialogica.ops/bin/commonit
 
 cd ${base_dir}
 
